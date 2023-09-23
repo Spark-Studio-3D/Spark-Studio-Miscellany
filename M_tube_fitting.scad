@@ -26,7 +26,7 @@ rgn = [ circle(d =dia2), circle(d = dia - 2 * wall) ];
 tab = r2+neck/2;
 
 
-joint45();
+joint90();
 
 
 
@@ -48,9 +48,9 @@ module joint90() {
     tube(od = dia, wall = wall, h = neck, anchor = TOP);
     up(r2) right(r2) yrot(90) tube(od = dia, wall = wall, h = neck, anchor = BOT);
 
-    fwd(r2) up(r2) {   // Mounting plate
+    fwd(r2-0.1) up(r2) {   // Mounting plate
         difference() {
-            cuboid([tab,base,tab], rounding = hole, edges = "Y", anchor = FWD+LEFT+UP);
+            #cuboid([tab,base,tab], rounding = hole * 2.5, edges = "Y", anchor = FWD+LEFT+UP);
             right(neck) down(neck) fwd(eps/2)
                 ycyl(d = hole, h = base+eps, anchor = FWD);
         }
