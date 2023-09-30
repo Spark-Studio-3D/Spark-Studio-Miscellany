@@ -26,7 +26,7 @@ rgn = [ circle(d =dia2), circle(d = dia - 2 * wall) ];
 tab = r2+neck/2;
 
 
-joint90();
+joint45B();
 
 
 
@@ -76,3 +76,13 @@ module joint45() {
         }
     }        
 }
+
+
+module joint45B() {
+   
+        right(22.5) up(44) yrot(202.5) joint45();
+        xscale(2) #cyl(d=dia/2, h=4, rounding1 = 3, teardrop=true, anchor = BOT);
+}          
+
+
+
