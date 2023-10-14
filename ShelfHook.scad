@@ -1,44 +1,34 @@
 include <BOSL2/std.scad>
+
 $fn = 72;
-A = 12;
-B = 6;
-C = 2.5;
-D = 5;
-fudge = 1;
-base = [55, 35, D-C];
-loop = 30;
 
-hook();
-left(30) post();
+A = 12;     // shelf hole diameter
+B = 6;      // shelf slot width
+C = 2.5;    // shelf rail thickness
+wall = 3;   // hook thickness
+base = [35, 25, wall]; 
+hook = 25;  // hook diameter
+edge = 1;   // rounding radius
 
-module hook(){
-    difference() {
-        union() {
-            cyl(d = base.y, h = base.z, anchor = BOT);
-            cuboid(base, anchor = LEFT+BOT);
+xscale(0.5) cyl(d = base.y, h = base.z, rounding = edge, anchor = BOT);
+cuboid(base, rounding = edge, edges = "X", anchor = BOT+LEFT)
+    position(BOT+LEFT) cyl(d = B, h = C, anchor = TOP)
+        position(BOT) cyl(d = A, h = C, rounding = edge, anchor = TOP);
+right(base.x){ 
+    xrot(90) back(hook/2) hook();
+    up(hook - base.z) xscale(0.5) left_half() cyl(d = base.y, h = base.z, rounding = edge, anchor = BOT);
+}
+
+
+
+module hook() {
+    right_half()
+        diff() {
+            tube(od = hook, wall = base.z, h = base.y) {
+                yrot_copies(n=2) {
+                    tag("remove") attach(TOP) rounding_cylinder_mask(d = hook, rounding = edge);
+                    tag("remove") attach(TOP) rounding_hole_mask(d = hook - 2 * wall, rounding = edge);
+                }
+            }
         }
-        zrot(180) slot();
-    }
-    right(base.x) loop();
-
-}
-
-
-module loop() {
-    right_half(s=200)
-    xrot(90) tube(od = loop, h = base.y, wall = base.z, anchor = FWD);
-}
-
-module slot() {
-    hull(){
-        cyl(d = A + fudge, h = D, anchor = BOT);
-        right(10)  cyl(d1 = B, d2 = A + fudge, h = D, anchor = BOT);
-    }
-}
-
-
-module post() {
-    cyl(d = A, h = C, anchor = BOT, rounding1 = 0.5, rounding2 = 0.5)
-        attach(TOP) cyl(d = B, h = C, anchor = BOT)
-            attach(TOP) cyl(d1 = B, d2 = A, h = D, anchor = BOT);
 }
