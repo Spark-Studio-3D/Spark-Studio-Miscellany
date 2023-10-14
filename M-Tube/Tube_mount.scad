@@ -17,12 +17,19 @@ module hide_variables () {}	// variables below hidden from Customizer
 
 $fn=72;
 eps = 0.01;
-tube_id = 29;
+tube_id = 28;
 tube_od = 32;
-wall = 2;               //  Insert wall thickness
+wall = 2;       //  Insert wall thickness
 mount_od = tube_od + 2 * wall;           
-tubewall = 1.35;        //  Tube wall thickness
-ring = bottom ? 25: 15; //  Height of Ring
+floor = 2;      //Floor Thickness
+d_btn = 12;     //Button Dia
+h_btn = 3;      //Button Thickness
+d_post = 6;     //Post Dia
+h_post = 4.5;   //Post Height
+
+ring = bottom ? 20: 15; //  Height of Ring
+/*######################################################*/
+
 
 tube_grip();
 flat();
@@ -36,10 +43,10 @@ flat();
 module tube_grip() {
     if (bottom) {
         diff() {
-            tube(od = tube_od + wall, id = tube_id - wall, h = 1, anchor = BOT)
+            tube(od = tube_od + wall, id = tube_id - wall, h = floor, anchor = BOT)
             attach(BOT) rounding_cylinder_mask(d=mount_od, rounding = 2);
         }
-        tube(od = tube_id, wall = wall, h = ring, anchor = BOT);
+        *tube(od = tube_id, wall = wall, h = ring, anchor = BOT);
     }
     diff() {
         tube(id = tube_od, wall = wall, h = ring, anchor = BOT)
@@ -58,10 +65,7 @@ module flat() {
 }
 
 module post() {
-    A = 12; //Button Dia
-    B = 6;  //Post Dia
-    C = 4;  //Post Height
-    D = 3;  //Button Thickness
-    down(wall) yrot(180) cyl(d = B, h = C, anchor = TOP)
-    attach(BOT) cyl(d = A, h = D, rounding1 = 0.5, rounding2 = 0.5, anchor = BOT);
+   
+    down(wall) yrot(180) cyl(d = d_post, h = h_post, anchor = TOP)
+    attach(BOT) cyl(d = d_btn, h = h_btn, rounding1 = 0.5, rounding2 = 0.5, anchor = BOT);
 }
