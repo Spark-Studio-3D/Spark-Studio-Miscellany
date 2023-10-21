@@ -8,8 +8,8 @@ fudge = 1;
 base = [35, 35, D];
 loop = 30;
 
-hook();
-
+//hook();
+post();
 module hook(){
     xscale(0.5) cyl(d = base.y, h = base.z, anchor = BOT);
     post();
@@ -28,5 +28,5 @@ module loop() {
 
 module post() {
     cyl(d = B, h = C, anchor = TOP)
-    attach(BOT) cyl(d = A, h = C, rounding1 = 0.5, rounding2 = 0.5, anchor = BOT);
+    position(BOT) cyl(d = A, h = C, rounding1 = 0.5, rounding2 = 0.5, anchor = TOP);
 }
