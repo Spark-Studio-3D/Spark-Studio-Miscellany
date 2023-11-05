@@ -11,16 +11,16 @@
 
 include <BOSL2/std.scad>
 
-angle = 45;         //  [45,90]
+angle = 90;         //  [45,90]
 
 module hide_variables () {}	// variables below hidden from Customizer
 
 $fn=72;
 eps = 0.1;
-dia = 29;           //  Tube id
-neck = 20;          //  Length of neck
+dia = 16.8;           //  Tube id
+neck = 15;          //  Length of neck
 wall = 1;           //  Insert wall thickness
-tubewall = 1.35;    //  Tube wall thickness
+tubewall = 2.6;    //  Tube wall thickness
 hole = 4;           // Mounting hole dia.
 dia2 = dia + 2 * tubewall;    //  Tube od  
 r2 = dia2/2;                  //  Tube radius
@@ -55,15 +55,15 @@ module sub90() {  // 90 degree joint
 
     fwd(r2-0.1) up(r2) {   // Mounting plate
         difference() {
-            #cuboid([tab,base,tab], rounding = hole * 2.8, edges = "Y", anchor = FWD+LEFT+UP);
-            right(neck) down(neck) fwd(eps/2)
-                ycyl(d = hole, h = base+eps, anchor = FWD);
+            #cuboid([tab,base,tab], rounding = hole * 2, edges = "Y", anchor = FWD+LEFT+UP);
+            right(14) down(hole * 3.5) fwd(eps/2)
+                #ycyl(d = hole, h = base+eps, anchor = FWD);
         }
     }
 }
 
 module joint90() {     // Reposition to make it more printable and add flat base
-    right(11.27) up(20.55) yrot(-135) sub90();
+    right(7.75) up(15) yrot(-135) sub90();
     xscale(1.75) #cyl(d=dia/2 + 1, h=4.5, rounding1 = 4, teardrop = true, anchor = BOT);
 }
 
