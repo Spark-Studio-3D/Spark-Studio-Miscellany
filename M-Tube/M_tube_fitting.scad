@@ -12,6 +12,7 @@
 include <BOSL2/std.scad>
 
 angle = 90;         //  [45,90]
+pin = false;         //  [true,false]
 
 module hide_variables () {}	// variables below hidden from Customizer
 
@@ -19,15 +20,16 @@ $fn=72;
 eps = 0.1;
 dia = 16.8;           //  Tube id
 neck = 15;          //  Length of neck
-wall = 1;           //  Insert wall thickness
+wall = 2;           //  Insert wall thickness
 tubewall = 2.6;    //  Tube wall thickness
 hole = 4;           // Mounting hole dia.
 dia2 = dia + 2 * tubewall;    //  Tube od  
 r2 = dia2/2;                  //  Tube radius
 id = dia - wall * 2;          //  Insert id
-base = wall + tubewall;       //  Height of base  
+base = wall;       //  Height of base  
 rgn = [ circle(d =dia2), circle(d = dia - 2 * wall) ];
 tab = r2+neck/2;
+card = 1;
 
 
 if (angle == 45) joint45();
@@ -55,16 +57,24 @@ module sub90() {  // 90 degree joint
 
     fwd(r2-0.1) up(r2) {   // Mounting plate
         difference() {
-            #cuboid([tab,base,tab], rounding = hole * 2, edges = "Y", anchor = FWD+LEFT+UP);
-            right(14) down(hole * 3.5) fwd(eps/2)
-                #ycyl(d = hole, h = base+eps, anchor = FWD);
+            cuboid([tab,base,tab], rounding = hole * 2, edges = "Y", anchor = FWD+LEFT+UP);
+            right(14) down(hole * 3.45) fwd(eps/2) ycyl(d = hole, h = base+eps, anchor = FWD);
         }
     }
+
+    
+
 }
 
 module joint90() {     // Reposition to make it more printable and add flat base
-    right(7.75) up(15) yrot(-135) sub90();
-    xscale(1.75) #cyl(d=dia/2 + 1, h=4.5, rounding1 = 4, teardrop = true, anchor = BOT);
+    difference() {
+        right(7.75) up(14.5) yrot(-135) sub90();   
+        left(13) up(20) yrot(-45)    cuboid([dia+1,card,neck/2], anchor = BOT); //backing card slots
+        right(13) up(20) yrot(45)    cuboid([dia+1,card,neck/2], anchor = BOT); 
+    }
+    if (pin) up(11) #ycyl(d = hole, h = dia +1);  //tape bending pin
+    xscale(1.75) cyl(d=dia/2 + 1, h=4.5, rounding1 = 4, teardrop = true, anchor = BOT); //flat base for printing
+
 }
 
 
