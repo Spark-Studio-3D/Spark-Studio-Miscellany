@@ -2,7 +2,25 @@
     "fileFormatVersion": "1",
     "parameterSets": {
         "New set 1": {
-            "angle": "90"
+            "angle": "90",
+            "insert_wall": "2",
+            "neck_h": "20",
+            "pin": "true",
+            "tube_id": "16.850000000000001",
+            "tube_wall": "2.6000000000000001"
+        },
+        "New set 2": {
+            "angle": "60",
+            "card": "1",
+            "hole": "4",
+            "insert_h": "10",
+            "insert_wall": "2",
+            "neck_h": "7",
+            "part": "all",
+            "pin": "true",
+            "pin_d": "2",
+            "tube_id": "36.850000000000001",
+            "tube_wall": "2.6000000000000001"
         }
     }
 }

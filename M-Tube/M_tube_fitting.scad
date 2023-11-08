@@ -1,5 +1,5 @@
 //  Spark Studio
-//  Tube fittings for lighted M sign from 28mm tubes.
+//  Tube fittings for lighted M sign from 20mm tubes.
 //  by Richard
 //
 
@@ -11,100 +11,95 @@
 
 include <BOSL2/std.scad>
 
-angle = 90;         //  [45,90]
-pin = false;         //  [true,false]
+part = "all";       //  [all,elbow,neck,tab]
+angle = 90;         //  [30,60,90]
+pin = true;         //  [true,false]
+mount = true;       //  [true,false]    
+flat = true;        //  [true,false]    
+
+tube_id = 16.85;    //  Tube id             <-- Adjust this value to fit for over/under extrusion
+tube_wall = 2.6;    //  Tube wall 
+
+insert_wall = 2;    // Insert wall 
+insert_h = 10;      // Length of insert
+neck_h = 7;         // Length of neck 
+
+card  = 1.5;        // LED backing card slot
+pin_d = 2;          // LED strip routing pin
+hole = 4;           // Mounting hole diameter
+
+
 
 module hide_variables () {}	// variables below hidden from Customizer
 
 $fn=72;
 eps = 0.1;
-dia = 16.8;           //  Tube id
-neck = 15;          //  Length of neck
-wall = 2;           //  Insert wall thickness
-tubewall = 2.6;    //  Tube wall thickness
-hole = 4;           // Mounting hole dia.
-dia2 = dia + 2 * tubewall;    //  Tube od  
-r2 = dia2/2;                  //  Tube radius
-id = dia - wall * 2;          //  Insert id
-base = wall;       //  Height of base  
-rgn = [ circle(d =dia2), circle(d = dia - 2 * wall) ];
-tab = r2+neck/2;
-card = 1;
 
 
-if (angle == 45) joint45();
-if (angle == 90) joint90();
+tube_od = tube_id + 2 * tube_wall;    //  Tube od  
+tube_ir = tube_id/2;     //  Tube internal radius
+
+insert_id = tube_id - insert_wall * 2;  //  Insert id
+
+tab = [hole * 2 , 2, tube_od/2];      //  Mounting Tab  
 
 
 
-/*######################################################/*
+/*####################### MAIN ###############################*/
 
-    MODULES
-
-/*######################################################*/
-
-module sub90() {  // 90 degree joint
-    tfm = [
-        down(neck/2),
-        for (a=[0:5:90]) yrot(a, cp=[r2+eps,0,0]),
-        move([neck/2 + r2,0,r2]) * yrot(90),
-    ];
-    sweep(rgn, tfm, closed=false, caps=true);
+if (part == "all")   M_tube_fitting(angle);
+if (part == "elbow") elbow(angle);
+if (part == "neck")  neck();
+if (part == "tab")   tab();
 
 
-    tube(od = dia, wall = wall, h = neck, anchor = TOP);
-    up(r2) right(r2) yrot(90) tube(od = dia, wall = wall, h = neck, anchor = BOT);
 
-    fwd(r2-0.1) up(r2) {   // Mounting plate
-        difference() {
-            cuboid([tab,base,tab], rounding = hole * 2, edges = "Y", anchor = FWD+LEFT+UP);
-            right(14) down(hole * 3.45) fwd(eps/2) ycyl(d = hole, h = base+eps, anchor = FWD);
-        }
+/*#########################  Modules #############################*/
+
+module M_tube_fitting (angle) {
+    diff() {
+        elbow(angle);
+        if (flat) tag("remove") cyl(d = 20, h = tube_wall - 1.5, anchor = BOT);   // Flatten Bottom        
+    }
+    xflip_copy() {  //place neck at each end of elbow
+        up(tube_od - (sin(angle/2) * tube_od/2)) right(cos(angle/2) * tube_od/2) yrot(angle/2) neck();
     }
 
+    if (pin)  up(tube_od/2) ycyl(d = pin_d, h = tube_id);      //LED strip routing pin
+
+    if (mount) fwd(tube_od/2 - tab.y)  up(tube_od * 2/3) tab();  //Mounting pad w/screw hole
+}
+
+module elbow(angle) {
+    region = [ circle(d = tube_od), circle(d = insert_id) ]; 
     
+    transforms = [ 
+        for (a=[0: 5 : 180 - angle]) yrot(a, cp=[tube_od/2,0,0]), 
+    ];
 
-}
-
-module joint90() {     // Reposition to make it more printable and add flat base
-    difference() {
-        right(7.75) up(14.5) yrot(-135) sub90();   
-        left(13) up(20) yrot(-45)    cuboid([dia+1,card,neck/2], anchor = BOT); //backing card slots
-        right(13) up(20) yrot(45)    cuboid([dia+1,card,neck/2], anchor = BOT); 
-    }
-    if (pin) up(11) #ycyl(d = hole, h = dia +1);  //tape bending pin
-    xscale(1.75) cyl(d=dia/2 + 1, h=4.5, rounding1 = 4, teardrop = true, anchor = BOT); //flat base for printing
-
+    left(tube_od/2) up(tube_od)                      // Reposition to place bottom center 
+        yrot(180 + angle/2, cp = [tube_od/2, 0, 0])  // of the elbow at the origin after the sweep.
+  
+    sweep(region, transforms, closed=false, caps=true);     
 }
 
 
-
-module sub45() {  // 45 degree joint
-    tube(od = dia, id = id, l = neck, anchor = BOT);
-    up(neck/2) tube(od = dia2, id = id, l = neck/2, anchor = BOT);
-    up(neck) {
-        rgn = [ circle(d =dia2), circle(d = dia - 2 * wall) ];
-        tfm = [
-
-            for (a=[0:5:135]) yrot(a, cp=[r2+eps,0,0]),
-            
-        ];
-        sweep(rgn, tfm, closed=false, caps=true) {
-            attach(RIGHT+DOWN)
-                union() {
-                    tube(od = dia, id = id, l = neck, anchor = BOT);
-                    up(neck/2) tube(od = dia2, id = id, l = neck/2, anchor = TOP);
-                }
+module neck() {
+    tag_scope("neck")
+    diff() {
+        tube(od = tube_od, id = insert_id, h = neck_h, anchor = BOT) {                      //Tube neck
+            attach(TOP) tube(od = tube_id, id = insert_id, h = insert_h, anchor = BOT)      //Tube insert
+                tag("remove") attach(TOP) cuboid([tube_id, card, insert_h], anchor = TOP);  //Card alignment slots
         }
-    }        
+    }
 }
 
-
-module joint45() {     // Reposition to make it more printable and add flat base
-   
-        right(22.5) up(44.2) yrot(202.5) sub45();
-        xscale(1.5) #cyl(d=dia/2 + 1, h=4.5, rounding1 = 4, teardrop = true, anchor = BOT);
-}          
-
-
-
+module tab() {
+    difference() {
+        conv_hull() {
+            ycyl(d = 1.4 * tab.x, h = tab.y, anchor = BACK);
+            up(tube_od/2 + hole/4) ycyl(d = tab.x, h = tab.y, anchor = BACK);
+        }
+        up(tube_od/2) tag("remove") ycyl(d = hole, h = tab.y, rounding2 = -tab.y/2, anchor = BACK);
+    }
+}

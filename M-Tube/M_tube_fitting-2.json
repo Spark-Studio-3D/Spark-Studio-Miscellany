@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "angle": "90",
+            "insert_wall": "2",
+            "pin": "true",
+            "tube_id": "16.800000000000001",
+            "tube_wall": "2.6000000000000001"
+        }
+    }
+}
