@@ -11,7 +11,7 @@
 
 include <BOSL2/std.scad>
 
-part = "all";       //  [all,elbow,neck,tab,half]
+part = "all";       //  [all,elbow,neck,tab,half,mount]
 angle = 90;         //  [30,60,90]
 pin = true;         //  [true,false]
 mount = true;       //  [true,false]    
@@ -54,6 +54,7 @@ if (part == "all")   M_tube_fitting(angle);
 if (part == "elbow") elbow(angle);
 if (part == "neck")  neck();
 if (part == "tab")   tab();
+if (part == "mount") mount(); 
 if (part == "half")  front_half() M_tube_fitting(angle);
 
 
@@ -100,11 +101,21 @@ module neck() {
 }
 
 module tab() {
-    difference() {
+    tag_scope("tab")
+    diff() {
         conv_hull() {
             ycyl(d = 1.4 * tab.x, h = tab.y, anchor = BACK);
             up(tube_od/2 + hole/4) ycyl(d = tab.x, h = tab.y, anchor = BACK);
         }
         up(tube_od/2) tag("remove") ycyl(d = hole, h = tab.y, rounding2 = -tab.y/2, anchor = BACK);
+    }
+}
+
+module mount(){
+    diff() {
+        cuboid([tube_od + 5, 10, tube_od * 0.9], rounding= 3, except = BOT)
+        up (tube_od * 0.15) tag("remove") ycyl(d = tube_od, h = 10 + eps);
+        tag("remove") cyl(d = hole, h = tube_od);
+
     }
 }
