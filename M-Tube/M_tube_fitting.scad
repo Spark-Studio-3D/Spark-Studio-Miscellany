@@ -11,7 +11,7 @@
 
 include <BOSL2/std.scad>
 
-part = "all";       //  [all,elbow,neck,tab,half,mount]
+part = "all";       //  [all,elbow,neck,mount,half,clip]
 angle = 90;         //  [30,60,90]
 pin = true;         //  [true,false]
 mount = true;       //  [true,false]    
@@ -30,6 +30,7 @@ hole = 4;           // Mounting hole diameter
 
 elbow_r = 0;        // Elbow radius of curvature
 
+slice_y = 0;        // Y position of slice plane
 
 
 module hide_variables () {}	// variables below hidden from Customizer
@@ -45,6 +46,11 @@ insert_id = tube_id - insert_wall * 2;  //  Insert id
 
 tab = [hole * 2 , 2, tube_od/2];      //  Mounting Tab  
 
+clip_block = [tube_od + 20, 10, tube_od];    //size of mounting clip
+clip_lift = 10;                              //mounting clip base lift  
+clip_hole = 2.5;
+clip_head = [5.5,undef,3];
+
 chord_l = 2 * elbow_r * sin((180-angle)/2);      //Reposition parts when 
 chord_h = (elbow_r) * (1 - cos((180-angle)/2));  //elbow_r > 0
 
@@ -53,9 +59,9 @@ chord_h = (elbow_r) * (1 - cos((180-angle)/2));  //elbow_r > 0
 if (part == "all")   M_tube_fitting(angle);
 if (part == "elbow") elbow(angle);
 if (part == "neck")  neck();
-if (part == "tab")   tab();
-if (part == "mount") mount(); 
-if (part == "half")  front_half() M_tube_fitting(angle);
+if (part == "mount")  mount();
+if (part == "clip")  clip(); 
+if (part == "half")  front_half(y = slice_y) M_tube_fitting(angle);
 
 
 /*#########################  Modules #############################*/
@@ -71,7 +77,7 @@ module M_tube_fitting (angle) {
 
     if (pin)  up(tube_od/2) ycyl(d = pin_d, h = tube_id);      //LED strip routing pin
 
-    if (mount) fwd(tube_od/2 - tab.y)  up(tube_od * 2/3) tab();  //Mounting pad w/screw hole
+    if (mount) fwd(tube_od/2 - tab.y)  up(tube_od * 0.75) mount();  //Mounting tab w/screw hole
 }
 
 module elbow(angle) {
@@ -100,22 +106,28 @@ module neck() {
     }
 }
 
-module tab() {
-    tag_scope("tab")
+module mount() {  // Mounting tab
+    tag_scope("mount")
     diff() {
         conv_hull() {
-            ycyl(d = 1.4 * tab.x, h = tab.y, anchor = BACK);
-            up(tube_od/2 + hole/4) ycyl(d = tab.x, h = tab.y, anchor = BACK);
+            xscale(3) ycyl(d = tab.x, h = tab.y, anchor = BACK);
+            up(tube_od/2) ycyl(d = tab.x, h = tab.y, anchor = BACK);
         }
         up(tube_od/2) tag("remove") ycyl(d = hole, h = tab.y, rounding2 = -tab.y/2, anchor = BACK);
     }
 }
 
-module mount(){
-    diff() {
-        cuboid([tube_od + 5, 10, tube_od * 0.9], rounding= 3, except = BOT)
-        up (tube_od * 0.15) tag("remove") ycyl(d = tube_od, h = 10 + eps);
-        tag("remove") cyl(d = hole, h = tube_od);
-
+module clip(){
+    difference() {
+        cuboid(clip_block, rounding = 3, except = BOT);
+        up(clip_lift) left(tube_od/2) cuboid([5,clip_block.y + eps,10], anchor = LEFT);
+        up (tube_od * 0.25) {
+            ycyl(d = tube_od + 0.5, h = 10 + eps);
+            xcyl(d = clip_hole, h = tube_od, anchor = RIGHT);
+            left(clip_block.x/2 - clip_head.z/2) xcyl(d = clip_head.x, h = clip_head.z);
+        }
+        cyl(d = hole, h = tube_od, anchor = TOP);
+        down(clip_lift/2) cyl(d = hole + 2, h = clip_head.z, anchor = TOP);
+        
     }
 }

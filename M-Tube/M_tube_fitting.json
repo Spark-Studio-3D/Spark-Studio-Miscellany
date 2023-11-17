@@ -21,6 +21,39 @@
             "pin_d": "2",
             "tube_id": "36.850000000000001",
             "tube_wall": "2.6000000000000001"
+        },
+        "New set 3": {
+            "angle": "90",
+            "card": "1.5",
+            "elbow_r": "0",
+            "flat": "true",
+            "hole": "4",
+            "insert_h": "10",
+            "insert_wall": "2",
+            "mount": "true",
+            "neck_h": "7",
+            "part": "mount",
+            "pin": "true",
+            "pin_d": "2",
+            "tube_id": "16.850000000000001",
+            "tube_wall": "2.6000000000000001"
+        },
+        "New set 4": {
+            "angle": "90",
+            "card": "1.5",
+            "elbow_r": "0",
+            "flat": "true",
+            "hole": "4",
+            "insert_h": "10",
+            "insert_wall": "2",
+            "mount": "true",
+            "neck_h": "7",
+            "part": "tab",
+            "pin": "true",
+            "pin_d": "2",
+            "slice_y": "0",
+            "tube_id": "16.850000000000001",
+            "tube_wall": "2.6000000000000001"
         }
     }
 }
