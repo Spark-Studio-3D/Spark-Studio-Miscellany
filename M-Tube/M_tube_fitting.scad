@@ -69,7 +69,7 @@ if (part == "half")  front_half(y = slice_y) M_tube_fitting(angle);
 module M_tube_fitting (angle) {
     diff() {
         elbow(angle);
-        if (flat) tag("remove") cyl(d = 20, h = tube_wall - 1.5, anchor = BOT);   // Flatten Bottom        
+        if (flat) tag("remove")  cyl(d = 20, h = tube_wall - 1.5, anchor = BOT);   // Flatten Bottom        
     }
     xflip_copy() {  //place neck at each end of elbow
         up(tube_od + chord_h - (sin(angle/2) * tube_od/2)) right(chord_l/2 + cos(angle/2) * tube_od/2) yrot(angle/2) neck();
