@@ -94,7 +94,7 @@ module neck() {
     diff() {
         tube(od = tube_od, id = insert_id, h = neck_h, anchor = BOT) {                      //Tube neck
             attach(TOP) tube(od = tube_id, id = insert_id, h = insert_h, anchor = BOT)      //Tube insert
-                tag("remove") attach(TOP) cuboid([tube_id, card, insert_h], anchor = TOP);  //Card alignment slots
+                tag("remove") attach(TOP) prismoid([tube_id, card], [tube_id, card*2],insert_h, anchor = TOP);  //Card alignment slots
         }
     }
 }
@@ -102,7 +102,7 @@ module neck() {
 module tab() {
     difference() {
         conv_hull() {
-            ycyl(d = 1.4 * tab.x, h = tab.y, anchor = BACK);
+            ycyl(d = 1.8 * tab.x, h = tab.y, anchor = BACK);
             up(tube_od/2 + hole/4) ycyl(d = tab.x, h = tab.y, anchor = BACK);
         }
         up(tube_od/2) tag("remove") ycyl(d = hole, h = tab.y, rounding2 = -tab.y/2, anchor = BACK);
