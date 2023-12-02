@@ -101,7 +101,7 @@ module neck() {
     diff() {
         tube(od = tube_od, id = insert_id, h = neck_h, anchor = BOT) {                      //Tube neck
             attach(TOP) tube(od = tube_id, id = insert_id, h = insert_h, anchor = BOT)      //Tube insert
-                tag("remove") attach(TOP) cuboid([tube_id, card, insert_h], anchor = TOP);  //Card alignment slots
+                tag("remove") attach(TOP) prismoid([tube_id, card], [tube_id, card * 2], insert_h, anchor = TOP);  //Card alignment slots
         }
     }
 }
